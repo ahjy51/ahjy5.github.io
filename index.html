@@ -1,41 +1,492 @@
----
-layout: page
-description: "博客页面"
----
-
-{% for post in paginator.posts %}
-<div class="post-preview">
-    <a href="{{ post.url | prepend: site.baseurl }}">
-        <h2 class="post-title">            
-            {{ post.title }}
-        </h2>
-        {% if post.subtitle %}
-        <h3 class="post-subtitle">
-            {{ post.subtitle }}
-        </h3>
-        {% endif %}
-        <div class="post-content-preview">
-            {{ post.content | strip_html | truncate:150 }}
-        </div>
-    </a>
-    <p class="post-meta">Posted by {% if post.author %}{{ post.author }}{% else %}{{ site.title }}{% endif %} on {{ post.date | date: "%B %-d, %Y" }}</p>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+	<title>iscream</title>
+	<link href="css/sty.css" media="screen" rel="stylesheet" type="text/css" />
+	<link href="http://v3.bootcss.com/dist/css/bootstrap.css" rel="stylesheet" />
+	<link href="http://v3.bootcss.com/examples/carousel/carousel.css" rel="stylesheet" />
+	<style type="text/css">
+	</style>
+	<style id="holderjs-style" type="text/css">
+	</style>
+	<link href="chrome-extension://cpngackimfmofbokmjmljamhdncknpmg/style.css" rel="stylesheet" type="text/css" /><script type="text/javascript" charset="utf-8" src="chrome-extension://cpngackimfmofbokmjmljamhdncknpmg/js/page_context.js"></script>
+	<style type="text/css">#yddContainer {
+	display:block;
+	font-family:Microsoft YaHei;
+	position:relative;
+	width:100%;
+	height:100%;
+	top:-4px;
+	left:-4px;
+	font-size:12px;
+	border:1px solid
+}
+#yddTop {
+	display:block;
+	height:22px
+}
+#yddTopBorderlr {
+	display:block;
+	position:static;
+	height:17px;
+	padding:2px 28px;
+	line-height:17px;
+	font-size:12px;
+	color:#5079bb;
+	font-weight:bold;
+	border-style:none solid;
+	border-width:1px
+}
+#yddTopBorderlr .ydd-sp {
+	position:absolute;
+	top:2px;
+	height:0;
+	overflow:hidden
+}
+.ydd-icon {
+	left:5px;
+	width:17px;
+	padding:0px 0px 0px 0px;
+	padding-top:17px;
+	background-position:-16px -44px
+}
+.ydd-close {
+	right:5px;
+	width:16px;
+	padding-top:16px;
+	background-position:left -44px
+}
+#yddKeyTitle {
+	float:left;
+	text-decoration:none
+}
+#yddMiddle {
+	display:block;
+	margin-bottom:10px
+}
+.ydd-tabs {
+	display:block;
+	margin:5px 0;
+	padding:0 5px;
+	height:18px;
+	border-bottom:1px solid
+}
+.ydd-tab {
+	display:block;
+	float:left;
+	height:18px;
+	margin:0 5px -1px 0;
+	padding:0 4px;
+	line-height:18px;
+	border:1px solid;
+	border-bottom:none
+}
+.ydd-trans-container {
+	display:block;
+	line-height:160%
+}
+.ydd-trans-container a {
+	text-decoration:none;
+}
+#yddBottom {
+	position:absolute;
+	bottom:0;
+	left:0;
+	width:100%;
+	height:22px;
+	line-height:22px;
+	overflow:hidden;
+	background-position:left -22px
+}
+.ydd-padding010 {
+	padding:0 10px
+}
+#yddWrapper {
+	color:#252525;
+	z-index:10001;
+	background:url(chrome-extension://eopjamdnofihpioajgfdikhhbobonhbb/ab20.png);
+}
+#yddContainer {
+	background:#fff;
+	border-color:#4b7598
+}
+#yddTopBorderlr {
+	border-color:#f0f8fc
+}
+#yddWrapper .ydd-sp {
+	background-image:url(chrome-extension://eopjamdnofihpioajgfdikhhbobonhbb/ydd-sprite.png)
+}
+#yddWrapper a, #yddWrapper a:hover, #yddWrapper a:visited {
+	color:#50799b
+}
+#yddWrapper .ydd-tabs {
+	color:#959595
+}
+.ydd-tabs, .ydd-tab {
+	background:#fff;
+	border-color:#d5e7f3
+}
+#yddBottom {
+	color:#363636
+}
+#yddWrapper {
+	min-width:250px;
+	max-width:400px;
+}
+	</style>
+</head>
+<body>
+<div id="header_lg"><img src="logo.png" />
+<div id="header_wp"><a href="http://wp.iscream.moe"><img align="middle" src="bt.png" /></a></div>
 </div>
 
-<hr>
-{% endfor %}
+<div id="header">
+<div id="header_bg"><img src="http://www.iscream.moe/321121.jpg" style="position:relative;z-index:1;  " width="100%" />
+<div id="sakura_div"><canvas id="sakura"></canvas></div>
 
-<!-- Pager -->
-{% if paginator.total_pages > 1 %}
-<ul class="pager">
-    {% if paginator.previous_page %}
-    <li class="previous">
-        <a href="{{ paginator.previous_page_path | prepend: site.baseurl | replace: '//', '/' }}">&larr; Newer Posts</a>
-    </li>
-    {% endif %}
-    {% if paginator.next_page %}
-    <li class="next">
-        <a href="{{ paginator.next_page_path | prepend: site.baseurl | replace: '//', '/' }}">Older Posts &rarr;</a>
-    </li>
-    {% endif %}
-</ul>
-{% endif %}
+<div id="main">
+<div class="container marketing"><!-- Three columns of text below the carousel -->
+<div class="row">
+<div class="col-lg-4"><img alt="140x140" class="img-circle" data-src="holder.js/140x140" src="icon1.jpg" style="width: 140px; height: 140px;" />
+<h2>变态王子与不笑喵</h2>
+
+<p>Android widget</p>
+
+<p><a class="btn btn-default" href="http://wp.iscream.moe/%E5%8F%98%E6%80%81%E7%8E%8B%E5%AD%90%E4%B8%8E%E4%B8%8D%E7%AC%91%E7%8C%AB-%E6%97%B6%E9%97%B4%E6%8F%92%E4%BB%B6/" role="button">(っ･&omega;･)っ</a></p>
+</div>
+<!-- /.col-lg-4 -->
+
+<div class="col-lg-4"><img alt="140x140" class="img-circle" data-src="holder.js/140x140" src="icon2.jpg" style="width: 140px; height: 140px;" />
+<h2>阿卡林手电筒</h2>
+
+<p>Android App</p>
+
+<p><a class="btn btn-default" href="http://wp.iscream.moe/%E9%98%BF%E5%8D%A1%E6%9E%97%E6%89%8B%E7%94%B5%E7%AD%92%E2%99%AA/" role="button">(っ･&omega;･)っ</a></p>
+</div>
+<!-- /.col-lg-4 -->
+
+<div class="col-lg-4"><img alt="140x140" class="img-circle" data-src="holder.js/140x140" src="icon3.jpg" style="width: 140px; height: 140px;" />
+<h2>中二病也要2048</h2>
+
+<p>Android Game</p>
+
+<p><a class="btn btn-default" href="http://wp.iscream.moe/%E4%B8%AD%E4%BA%8C%E7%97%85%E4%B9%9F%E8%A6%812048/" role="button">(っ･&omega;･)っ</a></p>
+</div>
+<!-- /.col-lg-4 --></div>
+<!-- /.row --><!-- START THE FEATURETTES --><!--
+        <hr class="featurette-divider">
+        <div class="row featurette">
+          <div class="col-md-7">
+            <h2 class="featurette-heading">First featurette heading. <span class="text-muted">It'll blow your mind.</span></h2>
+            <p class="lead">Donec ullamcorper nulla non metus auctor fringilla. Vestibulum id ligula porta felis euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur. Fusce dapibus, tellus ac cursus commodo.</p>
+          </div>
+          <div class="col-md-5"> <img class="featurette-image img-responsive" data-src="holder.js/500x500/auto" alt="500x500" src=""> </div>
+        </div>
+        <hr class="featurette-divider">
+        <div class="row featurette">
+          <div class="col-md-5"> <img class="featurette-image img-responsive" data-src="holder.js/500x500/auto" alt="500x500" src=""> </div>
+          <div class="col-md-7">
+            <h2 class="featurette-heading">Oh yeah, it's that good. <span class="text-muted">See for yourself.</span></h2>
+            <p class="lead">Donec ullamcorper nulla non metus auctor fringilla. Vestibulum id ligula porta felis euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur. Fusce dapibus, tellus ac cursus commodo.</p>
+          </div>
+        </div>
+        <hr class="featurette-divider">
+        <div class="row featurette">
+          <div class="col-md-7">
+            <h2 class="featurette-heading">And lastly, this one. <span class="text-muted">Checkmate.</span></h2>
+            <p class="lead">Donec ullamcorper nulla non metus auctor fringilla. Vestibulum id ligula porta felis euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur. Fusce dapibus, tellus ac cursus commodo.</p>
+          </div>
+          <div class="col-md-5"> <img class="featurette-image img-responsive" data-src="holder.js/500x500/auto" alt="500x500" src=""> </div>
+        </div>
+       
+        --><!-- /END THE FEATURETTES -->
+
+<hr class="featurette-divider" /><!-- FOOTER -->
+<footer>
+<p class="pull-right"><a href="#header_lg">Back to top</a></p>
+
+<p>2014 Iscream. &middot; <a href="http://weibo.com/yukizakurasou">weibo</a> &middot; _(:3」&ang;)_</p>
+</footer>
+</div>
+<!-- /.container --></div>
+</div>
+</div>
+<!--
+   <div id="header_logo" > <img src="logo.png"  align="middle"></div>
+    		<div id="header_bt"> <a href="http://wp.iscream.moe"  ><img src="bt.png"  align="middle"  ></a> </div>
+            --><script src="./Carousel Template for Bootstrap_files/jquery.min.js"></script><script src="./Carousel Template for Bootstrap_files/bootstrap.min.js"></script><script src="./Carousel Template for Bootstrap_files/holder.min.js"></script><!-- sakura shader --><script id="sakura_point_vsh" type="x-shader/x_vertex">
+uniform mat4 uProjection;
+uniform mat4 uModelview;
+uniform vec3 uResolution;
+uniform vec3 uOffset;
+uniform vec3 uDOF;  //x:focus distance, y:focus radius, z:max radius
+uniform vec3 uFade; //x:start distance, y:half distance, z:near fade start
+
+attribute vec3 aPosition;
+attribute vec3 aEuler;
+attribute vec2 aMisc; //x:size, y:fade
+
+varying vec3 pposition;
+varying float psize;
+varying float palpha;
+varying float pdist;
+
+//varying mat3 rotMat;
+varying vec3 normX;
+varying vec3 normY;
+varying vec3 normZ;
+varying vec3 normal;
+
+varying float diffuse;
+varying float specular;
+varying float rstop;
+varying float distancefade;
+
+void main(void) {
+    // Projection is based on vertical angle
+    vec4 pos = uModelview * vec4(aPosition + uOffset, 1.0);
+    gl_Position = uProjection * pos;
+    gl_PointSize = aMisc.x * uProjection[1][1] / -pos.z * uResolution.y * 0.5;
+
+    pposition = pos.xyz;
+    psize = aMisc.x;
+    pdist = length(pos.xyz);
+    palpha = smoothstep(0.0, 1.0, (pdist - 0.1) / uFade.z);
+
+    vec3 elrsn = sin(aEuler);
+    vec3 elrcs = cos(aEuler);
+    mat3 rotx = mat3(
+        1.0, 0.0, 0.0,
+        0.0, elrcs.x, elrsn.x,
+        0.0, -elrsn.x, elrcs.x
+    );
+    mat3 roty = mat3(
+        elrcs.y, 0.0, -elrsn.y,
+        0.0, 1.0, 0.0,
+        elrsn.y, 0.0, elrcs.y
+    );
+    mat3 rotz = mat3(
+        elrcs.z, elrsn.z, 0.0, 
+        -elrsn.z, elrcs.z, 0.0,
+        0.0, 0.0, 1.0
+    );
+    mat3 rotmat = rotx * roty * rotz;
+    normal = rotmat[2];
+
+    mat3 trrotm = mat3(
+        rotmat[0][0], rotmat[1][0], rotmat[2][0],
+        rotmat[0][1], rotmat[1][1], rotmat[2][1],
+        rotmat[0][2], rotmat[1][2], rotmat[2][2]
+    );
+    normX = trrotm[0];
+    normY = trrotm[1];
+    normZ = trrotm[2];
+
+    const vec3 lit = vec3(0.6917144638660746, 0.6917144638660746, -0.20751433915982237);
+
+    float tmpdfs = dot(lit, normal);
+    if(tmpdfs < 0.0) {
+        normal = -normal;
+        tmpdfs = dot(lit, normal);
+    }
+    diffuse = 0.4 + tmpdfs;
+
+    vec3 eyev = normalize(-pos.xyz);
+    if(dot(eyev, normal) > 0.0) {
+        vec3 hv = normalize(eyev + lit);
+        specular = pow(max(dot(hv, normal), 0.0), 20.0);
+    }
+    else {
+        specular = 0.0;
+    }
+
+    rstop = clamp((abs(pdist - uDOF.x) - uDOF.y) / uDOF.z, 0.0, 1.0);
+    rstop = pow(rstop, 0.5);
+    //-0.69315 = ln(0.5)
+    distancefade = min(1.0, exp((uFade.x - pdist) * 0.69315 / uFade.y));
+}
+</script><script id="sakura_point_fsh" type="x-shader/x_fragment">
+#ifdef GL_ES
+//precision mediump float;
+precision highp float;
+#endif
+
+uniform vec3 uDOF;  //x:focus distance, y:focus radius, z:max radius
+uniform vec3 uFade; //x:start distance, y:half distance, z:near fade start
+
+const vec3 fadeCol = vec3(0.08, 0.03, 0.06);
+
+varying vec3 pposition;
+varying float psize;
+varying float palpha;
+varying float pdist;
+
+//varying mat3 rotMat;
+varying vec3 normX;
+varying vec3 normY;
+varying vec3 normZ;
+varying vec3 normal;
+
+varying float diffuse;
+varying float specular;
+varying float rstop;
+varying float distancefade;
+
+float ellipse(vec2 p, vec2 o, vec2 r) {
+    vec2 lp = (p - o) / r;
+    return length(lp) - 1.0;
+}
+
+void main(void) {
+    vec3 p = vec3(gl_PointCoord - vec2(0.5, 0.5), 0.0) * 2.0;
+    vec3 d = vec3(0.0, 0.0, -1.0);
+    float nd = normZ.z; //dot(-normZ, d);
+    if(abs(nd) < 0.0001) discard;
+
+    float np = dot(normZ, p);
+    vec3 tp = p + d * np / nd;
+    vec2 coord = vec2(dot(normX, tp), dot(normY, tp));
+
+    //angle = 15 degree
+    const float flwrsn = 0.258819045102521;
+    const float flwrcs = 0.965925826289068;
+    mat2 flwrm = mat2(flwrcs, -flwrsn, flwrsn, flwrcs);
+    vec2 flwrp = vec2(abs(coord.x), coord.y) * flwrm;
+
+    float r;
+    if(flwrp.x < 0.0) {
+        r = ellipse(flwrp, vec2(0.065, 0.024) * 0.5, vec2(0.36, 0.96) * 0.5);
+    }
+    else {
+        r = ellipse(flwrp, vec2(0.065, 0.024) * 0.5, vec2(0.58, 0.96) * 0.5);
+    }
+
+    if(r > rstop) discard;
+
+    vec3 col = mix(vec3(1.0, 0.8, 0.75), vec3(1.0, 0.9, 0.87), r);
+    float grady = mix(0.0, 1.0, pow(coord.y * 0.5 + 0.5, 0.35));
+    col *= vec3(1.0, grady, grady);
+    col *= mix(0.8, 1.0, pow(abs(coord.x), 0.3));
+    col = col * diffuse + specular;
+
+    col = mix(fadeCol, col, distancefade);
+
+    float alpha = (rstop > 0.001)? (0.5 - r / (rstop * 2.0)) : 1.0;
+    alpha = smoothstep(0.0, 1.0, alpha) * palpha;
+
+    gl_FragColor = vec4(col * 0.5, alpha);
+}
+</script><!-- effects --><script id="fx_common_vsh" type="x-shader/x_vertex">
+uniform vec3 uResolution;
+attribute vec2 aPosition;
+
+varying vec2 texCoord;
+varying vec2 screenCoord;
+
+void main(void) {
+    gl_Position = vec4(aPosition, 0.0, 1.0);
+    texCoord = aPosition.xy * 0.5 + vec2(0.5, 0.5);
+    screenCoord = aPosition.xy * vec2(uResolution.z, 1.0);
+}
+</script><script id="bg_fsh" type="x-shader/x_fragment">
+#ifdef GL_ES
+//precision mediump float;
+precision highp float;
+#endif
+
+uniform vec2 uTimes;
+
+varying vec2 texCoord;
+varying vec2 screenCoord;
+
+void main(void) {
+    vec3 col;
+    float c;
+    vec2 tmpv = texCoord * vec2(0.8, 1.0) - vec2(0.95, 1.0);
+    c = exp(-pow(length(tmpv) * 1.8, 2.0));
+    col = mix(vec3(0.02, 0.0, 0.03), vec3(0.96, 0.98, 1.0) * 1.5, c);
+    gl_FragColor = vec4(col * 0.5, 1.0);
+}
+</script><script id="fx_brightbuf_fsh" type="x-shader/x_fragment">
+#ifdef GL_ES
+//precision mediump float;
+precision highp float;
+#endif
+uniform sampler2D uSrc;
+uniform vec2 uDelta;
+
+varying vec2 texCoord;
+varying vec2 screenCoord;
+
+void main(void) {
+    vec4 col = texture2D(uSrc, texCoord);
+    gl_FragColor = vec4(col.rgb * 2.0 - vec3(0.5), 1.0);
+}
+</script><script id="fx_dirblur_r4_fsh" type="x-shader/x_fragment">
+#ifdef GL_ES
+//precision mediump float;
+precision highp float;
+#endif
+uniform sampler2D uSrc;
+uniform vec2 uDelta;
+uniform vec4 uBlurDir; //dir(x, y), stride(z, w)
+
+varying vec2 texCoord;
+varying vec2 screenCoord;
+
+void main(void) {
+    vec4 col = texture2D(uSrc, texCoord);
+    col = col + texture2D(uSrc, texCoord + uBlurDir.xy * uDelta);
+    col = col + texture2D(uSrc, texCoord - uBlurDir.xy * uDelta);
+    col = col + texture2D(uSrc, texCoord + (uBlurDir.xy + uBlurDir.zw) * uDelta);
+    col = col + texture2D(uSrc, texCoord - (uBlurDir.xy + uBlurDir.zw) * uDelta);
+    gl_FragColor = col / 5.0;
+}
+</script><!-- effect fragment shader template --><script id="fx_common_fsh" type="x-shader/x_fragment">
+#ifdef GL_ES
+//precision mediump float;
+precision highp float;
+#endif
+uniform sampler2D uSrc;
+uniform vec2 uDelta;
+
+varying vec2 texCoord;
+varying vec2 screenCoord;
+
+void main(void) {
+    gl_FragColor = texture2D(uSrc, texCoord);
+}
+</script><!-- post processing --><script id="pp_final_vsh" type="x-shader/x_vertex">
+uniform vec3 uResolution;
+attribute vec2 aPosition;
+varying vec2 texCoord;
+varying vec2 screenCoord;
+void main(void) {
+    gl_Position = vec4(aPosition, 0.0, 1.0);
+    texCoord = aPosition.xy * 0.5 + vec2(0.5, 0.5);
+    screenCoord = aPosition.xy * vec2(uResolution.z, 1.0);
+}
+</script><script id="pp_final_fsh" type="x-shader/x_fragment">
+#ifdef GL_ES
+//precision mediump float;
+precision highp float;
+#endif
+uniform sampler2D uSrc;
+uniform sampler2D uBloom;
+uniform vec2 uDelta;
+varying vec2 texCoord;
+varying vec2 screenCoord;
+void main(void) {
+    vec4 srccol = texture2D(uSrc, texCoord) * 2.0;
+    vec4 bloomcol = texture2D(uBloom, texCoord);
+    vec4 col;
+    col = srccol + bloomcol * (vec4(1.0) + srccol);
+    col *= smoothstep(1.0, 0.0, pow(length((texCoord - vec2(0.5)) * 2.0), 1.2) * 0.5);
+    col = pow(col, vec4(0.45454545454545)); //(1.0 / 2.2)
+
+    gl_FragColor = vec4(col.rgb, 1.0);
+    gl_FragColor.a = 1.0;
+}
+</script><script src="http://s5.cnzz.com/stat.php?id=5859172&web_id=5859172" language="JavaScript"></script><script src="js/index.js" type="text/javascript"></script></body>
+</html>
