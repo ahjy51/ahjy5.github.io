@@ -51,11 +51,11 @@ const tags = ['指南', '博客'];
 
         <p>然后打开新文件，修改顶部的元信息：</p>
 
-        <pre><code>export async function getStaticPaths() {'{'}
+        <pre><code>export async function getStaticPaths() &#123;
   return [
-    {'{'} params: {'{'} slug: 'my-new-post' {'}'} {'}'},
+    &#123; params: &#123; slug: 'my-new-post' &#125; &#125;,
   ];
-{'}'}</code></pre>}
+&#125;
 
 const title = '我的新文章';           // ① 文章标题
 const description = '文章摘要……';     // ② 文章摘要
