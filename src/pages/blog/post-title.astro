@@ -1,22 +1,26 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 
+// ============================================
+//  文章模板 - 使用说明
+// ============================================
+// 1. 复制本文件重命名（如 my-first-post.astro）
+// 2. 修改下方 slug、标题、日期、标签
+// 3. 在 /blog/index.astro 中添加文章卡片
+// 4. 在首页 index.astro 中添加最新文章链接
+// ============================================
+
 export async function getStaticPaths() {
   return [
-    {
-      params: { slug: 'post-title' },
-      props: {
-        title: '文章标题',
-        description: '文章摘要，会显示在文章列表和分享卡片上',
-        date: '2026-06-28',
-        tags: ['标签1', '标签2'],
-      },
-    },
+    { params: { slug: 'post-title' } },
   ];
 }
 
 const { slug } = Astro.params;
-const { title, description, date, tags } = Astro.props;
+const title = '文章标题';
+const description = '文章摘要';
+const date = '2026-06-28';
+const tags = ['标签1', '标签2'];
 ---
 
 <Layout title={`${title} — Iscream`} description={description}>
@@ -48,16 +52,7 @@ const { title, description, date, tags } = Astro.props;
     <!-- 正文内容 -->
     <div class="hyouka-card p-6 md:p-8">
       <div class="prose">
-        <!-- ===== 从这里开始写正文 ===== -->
-
         <p>开篇引言或背景介绍……</p>
-
-        <!-- 封面图（可选） -->
-        <!-- 
-        <div class="not-prose mb-6">
-          <img src="/images/xxx.jpg" alt="封面图" class="rounded-lg w-full" />
-        </div>
-        -->
 
         <h2>一、</h2>
         <p>正文内容……</p>
@@ -83,8 +78,6 @@ console.log('Hello World');</code></pre>
 
         <h2>总结</h2>
         <p>写一段总结……</p>
-
-        <!-- ===== 正文结束 ===== -->
       </div>
     </div>
   </article>
