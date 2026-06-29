@@ -1,0 +1,91 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+  return [
+    {
+      params: { slug: 'post-title' },
+      props: {
+        title: '文章标题',
+        description: '文章摘要，会显示在文章列表和分享卡片上',
+        date: '2026-06-28',
+        tags: ['标签1', '标签2'],
+      },
+    },
+  ];
+}
+
+const { slug } = Astro.params;
+const { title, description, date, tags } = Astro.props;
+---
+
+<Layout title={`${title} — Iscream`} description={description}>
+  <article class="max-w-3xl mx-auto px-4 pt-24 pb-16">
+    <!-- 返回按钮 -->
+    <a href="/blog" class="inline-flex items-center gap-1 text-sm text-hyouka-gold dark:text-amber-400 
+                          hover:text-hyouka-sakura dark:hover:text-pink-300 transition-colors mb-6">
+      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+      </svg>
+      返回文章列表
+    </a>
+
+    <!-- 文章头部 -->
+    <header class="mb-8">
+      <div class="flex items-center gap-2 mb-3 flex-wrap">
+        {tags.map(tag => <span class="hyouka-tag">{tag}</span>)}
+      </div>
+      <h1 class="hyouka-heading text-2xl md:text-3xl mb-4">
+        {title}
+      </h1>
+      <div class="flex items-center gap-3 text-sm text-hyouka-mist dark:text-gray-500">
+        <time datetime={date}>{date}</time>
+        <span>·</span>
+        <span>Iscream</span>
+      </div>
+    </header>
+
+    <!-- 正文内容 -->
+    <div class="hyouka-card p-6 md:p-8">
+      <div class="prose">
+        <!-- ===== 从这里开始写正文 ===== -->
+
+        <p>开篇引言或背景介绍……</p>
+
+        <!-- 封面图（可选） -->
+        <!-- 
+        <div class="not-prose mb-6">
+          <img src="/images/xxx.jpg" alt="封面图" class="rounded-lg w-full" />
+        </div>
+        -->
+
+        <h2>一、</h2>
+        <p>正文内容……</p>
+
+        <h3></h3>
+        <p>更多内容……</p>
+
+        <ul>
+          <li></li>
+          <li></li>
+          <li></li>
+        </ul>
+
+        <h2>二、</h2>
+        <p>正文内容……</p>
+
+        <pre><code>// 代码示例
+console.log('Hello World');</code></pre>
+
+        <blockquote>
+          引用名言 —— 出处
+        </blockquote>
+
+        <h2>总结</h2>
+        <p>写一段总结……</p>
+
+        <!-- ===== 正文结束 ===== -->
+      </div>
+    </div>
+  </article>
+</Layout>
