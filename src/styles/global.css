@@ -1,0 +1,110 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-hyouka-cream text-hyouka-ink font-sans antialiased;
+  }
+
+  .dark body,
+  html.dark body {
+    @apply bg-gray-950 text-gray-100;
+  }
+}
+
+@layer components {
+  .hyouka-card {
+    @apply bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm rounded-lg shadow-sm 
+           border border-hyouka-mist/30 dark:border-gray-700/30
+           transition-all duration-300 hover:shadow-md;
+  }
+
+  .hyouka-link {
+    @apply text-hyouka-gold dark:text-amber-400 hover:text-hyouka-sakura 
+           dark:hover:text-pink-300 transition-colors duration-200;
+  }
+
+  .hyouka-tag {
+    @apply inline-block px-3 py-1 text-xs rounded-full 
+           bg-hyouka-sakura/10 text-hyouka-sakura-dark 
+           dark:bg-pink-900/30 dark:text-pink-300
+           border border-hyouka-sakura/20 dark:border-pink-800/30;
+  }
+
+  .hyouka-heading {
+    @apply font-serif font-bold text-hyouka-ink dark:text-gray-100;
+  }
+}
+
+/* Prose styles for blog content */
+.prose {
+  @apply leading-relaxed;
+}
+
+.prose h1, .prose h2, .prose h3, .prose h4 {
+  @apply hyouka-heading;
+}
+
+.prose h2 {
+  @apply text-2xl mt-10 mb-4 pb-2 border-b border-hyouka-mist/50 dark:border-gray-700/50;
+}
+
+.prose p {
+  @apply mb-4 text-[16px] leading-[1.8];
+}
+
+.prose a {
+  @apply hyouka-link;
+}
+
+.prose code {
+  @apply font-mono text-sm bg-hyouka-mist/30 dark:bg-gray-800 px-1.5 py-0.5 rounded;
+}
+
+.prose pre {
+  @apply bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto my-6;
+}
+
+.prose pre code {
+  @apply bg-transparent p-0;
+}
+
+.prose blockquote {
+  @apply border-l-4 border-hyouka-sakura dark:border-pink-700 pl-4 italic text-hyouka-ink-light dark:text-gray-300;
+}
+
+.prose img {
+  @apply rounded-lg my-8 mx-auto;
+}
+
+.prose ul, .prose ol {
+  @apply mb-4 pl-6;
+}
+
+.prose li {
+  @apply mb-1;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-hyouka-mist/50 dark:bg-gray-700/50 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-hyouka-sakura/50 dark:bg-pink-800/50;
+}

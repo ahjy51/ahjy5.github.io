@@ -1,0 +1,81 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="关于" description="关于 Iscream">
+  <div class="max-w-4xl mx-auto px-4 pt-24 pb-16">
+    <h1 class="hyouka-heading text-2xl mb-8 flex items-center gap-2">
+      <span class="w-1 h-5 bg-hyouka-sakura rounded-full inline-block"></span>
+      关于
+    </h1>
+
+    <div class="grid md:grid-cols-[240px_1fr] gap-8">
+      <!-- Sidebar -->
+      <div class="space-y-6">
+        <div class="hyouka-card p-6 text-center">
+          <div class="w-24 h-24 rounded-full mx-auto mb-4 overflow-hidden ring-2 ring-hyouka-sakura/30">
+            <img src="https://github.com/ahjy51.png" alt="Iscream" class="w-full h-full object-cover" />
+          </div>
+          <h2 class="hyouka-heading text-lg">Iscream</h2>
+          <p class="text-xs text-hyouka-mist dark:text-gray-500 mt-1">古典部 部員</p>
+
+          <div class="mt-4 space-y-1 text-xs text-hyouka-ink-light dark:text-gray-400">
+            <p>📍 中国</p>
+            <p>💻 Android & Web Developer</p>
+            <p>🎮 アニメ & ゲーム好き</p>
+          </div>
+
+          <div class="mt-4 pt-4 border-t border-hyouka-mist/30 dark:border-gray-700/30">
+            <a href="https://github.com/ahjy51" target="_blank"
+               class="text-hyouka-gold hover:text-hyouka-sakura transition-colors text-sm">
+              @ahjy51
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div class="hyouka-card p-6 space-y-6">
+        <section>
+          <h2 class="hyouka-heading text-lg mb-3">自己紹介</h2>
+          <p class="text-sm text-hyouka-ink-light dark:text-gray-300 leading-relaxed">
+            你好，我是 Iscream。一名对技术充满好奇心的开发者。
+            这个博客是我的「古典部」，用来记录日常开发中的思考、学习和探索。
+          </p>
+        </section>
+
+        <section>
+          <h2 class="hyouka-heading text-lg mb-3">技能</h2>
+          <div class="flex flex-wrap gap-2">
+            <span class="hyouka-tag">Android</span>
+            <span class="hyouka-tag">Kotlin</span>
+            <span class="hyouka-tag">Java</span>
+            <span class="hyouka-tag">Web</span>
+            <span class="hyouka-tag">React</span>
+            <span class="hyouka-tag">Node.js</span>
+          </div>
+        </section>
+
+        <section>
+          <h2 class="hyouka-heading text-lg mb-3">このブログについて</h2>
+          <p class="text-sm text-hyouka-ink-light dark:text-gray-300 leading-relaxed">
+            本站使用 Astro 构建，采用 TailwindCSS 定制冰菓主题风格。
+            部署于 GitHub Pages。文章以 Markdown 编写。
+          </p>
+        </section>
+
+        <section>
+          <h2 class="hyouka-heading text-lg mb-3">Links</h2>
+          <ul class="space-y-2 text-sm">
+            <li>
+              <a href="https://github.com/ahjy51/ahjy5.github.io" target="_blank"
+                 class="hyouka-link">
+                📂 本站源码
+              </a>
+            </li>
+          </ul>
+        </section>
+      </div>
+    </div>
+  </div>
+</Layout>

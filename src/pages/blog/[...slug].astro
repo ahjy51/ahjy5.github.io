@@ -1,0 +1,92 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+  return [
+    { params: { slug: 'hello-world' } },
+  ];
+}
+
+const { slug } = Astro.params;
+---
+
+<Layout title="Hello World — 古典部始動" description="古典部的第一篇文章">
+  <article class="max-w-3xl mx-auto px-4 pt-24 pb-16">
+    <!-- Back link -->
+    <a href="/blog" class="inline-flex items-center gap-1 text-sm text-hyouka-gold dark:text-amber-400 
+                          hover:text-hyouka-sakura dark:hover:text-pink-300 transition-colors mb-6">
+      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+      </svg>
+      返回文章列表
+    </a>
+
+    <!-- Header -->
+    <header class="mb-8">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="hyouka-tag">日常</span>
+        <span class="hyouka-tag">第一篇文章</span>
+      </div>
+      <h1 class="hyouka-heading text-2xl md:text-3xl mb-4">
+        Hello World — 古典部始動
+      </h1>
+      <div class="flex items-center gap-3 text-sm text-hyouka-mist dark:text-gray-500">
+        <time datetime="2026-06-28">2026 年 6 月 28 日</time>
+        <span>·</span>
+        <span>Iscream</span>
+      </div>
+    </header>
+
+    <!-- Cover Image -->
+    <div class="hyouka-card overflow-hidden mb-8">
+      <div class="aspect-[16/9] bg-gradient-to-br from-hyouka-sakura/20 to-hyouka-gold/20 
+                  dark:from-pink-900/20 dark:to-amber-900/20 flex items-center justify-center">
+        <span class="text-6xl">🌸</span>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="hyouka-card p-6 md:p-8">
+      <div class="prose">
+        <p>
+          この度、古典部のブログを開設しました。
+        </p>
+
+        <p>
+          これから日々の気づきや学び、技術的なメモなどを
+          綴っていきたいと思います。
+        </p>
+
+        <h2>このブログについて</h2>
+
+        <p>
+          本サイトは <strong>Astro</strong> + <strong>TailwindCSS</strong> で構築され、
+          GitHub Pages にホスティングされています。
+        </p>
+
+        <p>
+          テーマは「氷菓」（Hyouka）をインスパイアした温かみのある和風デザインです。
+          京都アニメーションの柔らかな色彩と、古典部の落ち着いた雰囲気を
+          イメージしています。
+        </p>
+
+        <h2>これから</h2>
+
+        <ul>
+          <li>Android 開発に関する Tips</li>
+          <li>Web 技術の学習メモ</li>
+          <li>アニメや読書の感想</li>
+          <li>日常の雑記</li>
+        </ul>
+
+        <p>
+          マイペースに更新していきます。よろしくお願いします。
+        </p>
+
+        <blockquote>
+          「僕には、やらなくてもいいことなら、やらない。やらなければいけないことなら、手短に。」
+        </blockquote>
+      </div>
+    </div>
+  </article>
+</Layout>

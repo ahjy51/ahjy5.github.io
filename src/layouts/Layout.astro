@@ -1,0 +1,34 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import SakuraCanvas from '../components/SakuraCanvas.astro';
+
+export interface Props {
+  title?: string;
+  description?: string;
+  showSakura?: boolean;
+}
+
+const { title = 'Iscream Blog', description = '古典部のブログ', showSakura = false } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="zh-CN" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title} | Iscream's Blog</title>
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="canonical" href={Astro.url} />
+  </head>
+  <body class="min-h-screen flex flex-col">
+    {showSakura && <SakuraCanvas />}
+    <Header />
+    <main class="flex-1">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

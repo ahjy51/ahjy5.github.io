@@ -1,17 +1,68 @@
 ---
-
+import Layout from '../layouts/Layout.astro';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout title="首页" description="Iscream 的个人博客" showSakura={true}>
+  <div class="relative z-10 min-h-screen flex flex-col items-center justify-center px-4 pt-24 pb-16">
+    <!-- Profile Section -->
+    <div class="text-center animate-fade-in max-w-2xl">
+      <div class="w-28 h-28 rounded-full mx-auto mb-6 overflow-hidden border-3 border-white/80 shadow-lg ring-2 ring-hyouka-sakura/30">
+        <img src="https://github.com/ahjy51.png" alt="Iscream" class="w-full h-full object-cover" />
+      </div>
+
+      <h1 class="hyouka-heading text-3xl md:text-4xl mb-2">
+        Iscream
+      </h1>
+      <p class="text-hyouka-ink-light dark:text-gray-400 mb-1">
+        古典部 部員
+      </p>
+      <p class="text-hyouka-mist dark:text-gray-500 text-sm mb-6">
+        好奇心駆動型の開発者 / Android & Web
+      </p>
+
+      <div class="flex justify-center gap-3 mb-8">
+        <a href="https://github.com/ahjy51" target="_blank"
+           class="px-4 py-2 rounded-full bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm 
+                  text-sm text-hyouka-ink-light dark:text-gray-300 
+                  border border-hyouka-mist/30 dark:border-gray-700/30
+                  hover:bg-hyouka-sakura/10 hover:border-hyouka-sakura/30 transition-all">
+          GitHub
+        </a>
+        <a href="/blog"
+           class="px-4 py-2 rounded-full bg-hyouka-sakura/80 dark:bg-pink-800/80 backdrop-blur-sm
+                  text-sm text-white
+                  hover:bg-hyouka-sakura transition-all">
+          浏览博客
+        </a>
+      </div>
+
+      <div class="hyouka-card p-6 text-left">
+        <p class="text-sm text-hyouka-ink-light dark:text-gray-300 leading-relaxed italic">
+          「日々、私たちが過ごしている日常は、実は奇跡の連続なのかもしれない。」
+        </p>
+        <p class="text-xs text-hyouka-mist dark:text-gray-500 mt-2 text-right">
+          — 折木奉太郎 『氷菓』
+        </p>
+      </div>
+
+      <!-- Latest Posts Preview -->
+      <div class="mt-10 text-left">
+        <h2 class="hyouka-heading text-lg mb-4 flex items-center gap-2">
+          <span class="w-1 h-4 bg-hyouka-sakura rounded-full inline-block"></span>
+          最新文章
+        </h2>
+        <div class="space-y-3">
+          <a href="/blog/hello-world" class="block hyouka-card p-4 hover:translate-x-1 transition-transform">
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <h3 class="font-medium text-hyouka-ink dark:text-gray-100 mb-1">Hello World</h3>
+                <p class="text-xs text-hyouka-mist dark:text-gray-500">2026-06-28</p>
+              </div>
+              <span class="hyouka-tag shrink-0">日常</span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>

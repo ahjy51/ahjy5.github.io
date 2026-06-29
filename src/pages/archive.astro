@@ -1,0 +1,39 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="归档" description="文章归档">
+  <div class="max-w-4xl mx-auto px-4 pt-24 pb-16">
+    <h1 class="hyouka-heading text-2xl mb-8 flex items-center gap-2">
+      <span class="w-1 h-5 bg-hyouka-sakura rounded-full inline-block"></span>
+      归档
+    </h1>
+
+    <div class="relative">
+      <!-- Timeline line -->
+      <div class="absolute left-4 top-0 bottom-0 w-px bg-hyouka-mist/50 dark:bg-gray-700/50"></div>
+
+      <!-- Year -->
+      <div class="relative pl-12 mb-8">
+        <div class="absolute left-2.5 top-1.5 w-3 h-3 rounded-full bg-hyouka-sakura border-2 border-white dark:border-gray-950"></div>
+        <h2 class="hyouka-heading text-lg">2026</h2>
+      </div>
+
+      <!-- Post -->
+      <a href="/blog/hello-world" class="relative pl-12 mb-6 block group">
+        <div class="absolute left-2.5 top-2 w-3 h-3 rounded-full bg-white dark:bg-gray-800 border-2 border-hyouka-mist group-hover:border-hyouka-sakura transition-colors"></div>
+        <div class="hyouka-card p-4 group-hover:translate-x-1 transition-transform">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <h3 class="font-medium text-hyouka-ink dark:text-gray-100 group-hover:text-hyouka-sakura transition-colors mb-1">
+                Hello World — 古典部始動
+              </h3>
+              <p class="text-xs text-hyouka-mist dark:text-gray-500">日常 · 第一篇文章</p>
+            </div>
+            <span class="text-xs text-hyouka-mist dark:text-gray-600 shrink-0">06-28</span>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+</Layout>
