@@ -1,0 +1,142 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+  return [
+    { params: { slug: 'new-post-guide' } },
+  ];
+}
+
+const { slug } = Astro.params;
+const title = '新建文章并推送指南';
+const description = '从创建文章到推送到 GitHub Pages 的完整操作流程';
+const date = '2026-06-28';
+const tags = ['指南', '博客'];
+---
+
+<Layout title={`${title} — Iscream`} description={description}>
+  <article class="max-w-3xl mx-auto px-4 pt-24 pb-16">
+    <a href="/blog" class="inline-flex items-center gap-1 text-sm text-hyouka-gold dark:text-amber-400 
+                          hover:text-hyouka-sakura dark:hover:text-pink-300 transition-colors mb-6">
+      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+      </svg>
+      返回文章列表
+    </a>
+
+    <header class="mb-8">
+      <div class="flex items-center gap-2 mb-3 flex-wrap">
+        {tags.map(tag => <span class="hyouka-tag">{tag}</span>)}
+      </div>
+      <h1 class="hyouka-heading text-2xl md:text-3xl mb-4">
+        {title}
+      </h1>
+      <div class="flex items-center gap-3 text-sm text-hyouka-mist dark:text-gray-500">
+        <time datetime={date}>{date}</time>
+        <span>·</span>
+        <span>Iscream</span>
+      </div>
+    </header>
+
+    <div class="hyouka-card p-6 md:p-8">
+      <div class="prose">
+
+        <p>本博客使用 Astro 构建，部署在 GitHub Pages。写一篇文章并发布只需要四步。</p>
+
+        <h2>一、创建或复制文章</h2>
+
+        <p>最简单的方式是复制现有的文章模板：</p>
+
+        <pre><code>cp src/pages/blog/post-title.astro src/pages/blog/my-new-post.astro</code></pre>
+
+        <p>然后打开新文件，修改顶部的元信息：</p>
+
+        <pre><code>export async function getStaticPaths() {'{'}
+  return [
+    {'{'} params: {'{'} slug: 'my-new-post' {'}'} {'}'},
+  ];
+{'}'}</code></pre>}
+
+const title = '我的新文章';           // ① 文章标题
+const description = '文章摘要……';     // ② 文章摘要
+const date = '2026-06-28';           // ③ 发布日期
+const tags = ['技术', '前端'];        // ④ 文章标签</code></pre>
+
+        <p><code>slug</code> 决定了文章的访问路径：<code>/blog/my-new-post</code>。建议用英文短横线连接。</p>
+
+        <h2>二、写正文</h2>
+
+        <p>在 <code>&lt;div class="prose"&gt;</code> 里编辑内容。支持常用的 HTML 标签：</p>
+
+        <table>
+          <thead>
+            <tr><th>标签</th><th>用途</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>&lt;h2&gt;</code> / <code>&lt;h3&gt;</code></td><td>章节标题</td></tr>
+            <tr><td><code>&lt;p&gt;</code></td><td>段落</td></tr>
+            <tr><td><code>&lt;ul&gt;&lt;li&gt;</code></td><td>无序列表</td></tr>
+            <tr><td><code>&lt;blockquote&gt;</code></td><td>引用</td></tr>
+            <tr><td><code>&lt;pre&gt;&lt;code&gt;</code></td><td>代码块</td></tr>
+            <tr><td><code>&lt;img&gt;</code></td><td>图片</td></tr>
+          </tbody>
+        </table>
+
+        <h2>三、添加到文章列表</h2>
+
+        <p>打开 <code>src/pages/blog/index.astro</code>，在文章列表区域添加一张卡片：</p>
+
+        <pre><code>&lt;a href="/blog/my-new-post" class="block hyouka-card p-5 group"&gt;
+  &lt;div class="flex items-center justify-between gap-4"&gt;
+    &lt;div class="flex-1"&gt;
+      &lt;div class="flex items-center gap-2 mb-2 flex-wrap"&gt;
+        &lt;span class="hyouka-tag"&gt;技术&lt;/span&gt;
+      &lt;/div&gt;
+      &lt;h2 class="text-lg font-semibold text-hyouka-ink dark:text-gray-100
+                 group-hover:text-hyouka-sakura dark:group-hover:text-pink-300
+                 transition-colors"&gt;
+        我的新文章
+      &lt;/h2&gt;
+      &lt;p class="text-sm text-hyouka-mist dark:text-gray-500 mt-1"&gt;
+        文章摘要……
+      &lt;/p&gt;
+      &lt;p class="text-xs text-hyouka-mist dark:text-gray-500 mt-2"&gt;
+        2026-06-28
+      &lt;/p&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/a&gt;</code></pre>
+
+        <p>也可以同步更新首页 <code>src/pages/index.astro</code> 的「最新文章」栏目。</p>
+
+        <h2>四、提交并推送</h2>
+
+        <pre><code># 暂存文件
+git add src/pages/blog/my-new-post.astro src/pages/blog/index.astro
+
+# 提交
+git commit -m "新增文章：我的新文章"
+
+# 推送到 GitHub
+git push</code></pre>
+
+        <p>推送后会自动触发 GitHub Actions 构建和部署，等待约 1-2 分钟即可在 <code>https://ahjy51.github.io</code> 看到更新。</p>
+
+        <blockquote>
+          <strong>提示</strong>：如果只修改文章内容而不调整文章列表，只需暂存文章文件本身即可。
+        </blockquote>
+
+        <h2>完整流程图</h2>
+
+        <pre><code>编辑文件 → git add → git commit → git push
+                                    ↓
+                         GitHub Actions 自动构建
+                                    ↓
+                          部署到 GitHub Pages
+                                    ↓
+                            访问博客查看更新</code></pre>
+
+      </div>
+    </div>
+  </article>
+</Layout>
