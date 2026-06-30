@@ -82,37 +82,27 @@ const tags = ['技术', '前端'];        // ④ 文章标签</code></pre>
           </tbody>
         </table>
 
-        <h2>三、添加到文章列表</h2>
+        <h2>三、注册到数据源</h2>
 
-        <p>打开 <code>src/pages/blog/index.astro</code>，在文章列表区域添加一张卡片：</p>
+        <p>打开 <code>src/data/posts.ts</code>，在 <code>posts</code> 数组里添加一条记录：
 
-        <pre><code>&lt;a href="/blog/my-new-post" class="block hyouka-card p-5 group"&gt;
-  &lt;div class="flex items-center justify-between gap-4"&gt;
-    &lt;div class="flex-1"&gt;
-      &lt;div class="flex items-center gap-2 mb-2 flex-wrap"&gt;
-        &lt;span class="hyouka-tag"&gt;技术&lt;/span&gt;
-      &lt;/div&gt;
-      &lt;h2 class="text-lg font-semibold text-hyouka-ink dark:text-gray-100
-                 group-hover:text-hyouka-sakura dark:group-hover:text-pink-300
-                 transition-colors"&gt;
-        我的新文章
-      &lt;/h2&gt;
-      &lt;p class="text-sm text-hyouka-mist dark:text-gray-500 mt-1"&gt;
-        文章摘要……
-      &lt;/p&gt;
-      &lt;p class="text-xs text-hyouka-mist dark:text-gray-500 mt-2"&gt;
-        2026-06-28
-      &lt;/p&gt;
-    &lt;/div&gt;
-  &lt;/div&gt;
-&lt;/a&gt;</code></pre>
+        <pre><code>export const posts: Post[] = [
+  &#123;
+    slug: 'my-new-post',           // 文件名（不含扩展名）
+    title: '我的新文章',           // 文章标题
+    description: '文章摘要……',     // 文章摘要
+    date: '2026-06-28',           // 发布日期
+    tags: ['技术', '前端'],        // 文章标签
+  &#125;,
+  // ...已有文章
+];</code></pre>
 
-        <p>也可以同步更新首页 <code>src/pages/index.astro</code> 的「最新文章」栏目。</p>
+        <p>添加后，<strong>首页、博客列表、归档页面会自动展示新文章</strong>，并按日期从新到旧排序。</p>
 
         <h2>四、提交并推送</h2>
 
         <pre><code># 暂存文件
-git add src/pages/blog/my-new-post.astro src/pages/blog/index.astro
+git add src/pages/blog/my-new-post.astro src/data/posts.ts
 
 # 提交
 git commit -m "新增文章：我的新文章"

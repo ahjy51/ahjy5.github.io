@@ -1,5 +1,16 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import { getSortedPosts } from "../data/posts";
+
+const allPosts = getSortedPosts();
+
+// Group posts by year
+const postsByYear = allPosts.reduce<Record<string, typeof allPosts>>((acc, post) => {
+  const year = post.date.slice(0, 4);
+  if (!acc[year]) acc[year] = [];
+  acc[year].push(post);
+  return acc;
+}, {});
 ---
 
 <Layout title="归档" description="文章归档">
@@ -13,27 +24,30 @@ import Layout from "../layouts/Layout.astro";
       <!-- Timeline line -->
       <div class="absolute left-4 top-0 bottom-0 w-px bg-hyouka-mist/50 dark:bg-gray-700/50"></div>
 
-      <!-- Year -->
-      <div class="relative pl-12 mb-8">
-        <div class="absolute left-2.5 top-1.5 w-3 h-3 rounded-full bg-hyouka-sakura border-2 border-white dark:border-gray-950"></div>
-        <h2 class="hyouka-heading text-lg">2026</h2>
-      </div>
+      {Object.entries(postsByYear).sort(([a], [b]) => Number(b) - Number(a)).map(([year, yearPosts]) => (
+        <div class="relative pl-12 mb-8">
+          <div class="absolute left-2.5 top-1.5 w-3 h-3 rounded-full bg-hyouka-sakura border-2 border-white dark:border-gray-950"></div>
+          <h2 class="hyouka-heading text-lg">{year}</h2>
 
-      <!-- Post -->
-      <a href="/blog/hello-world" class="relative pl-12 mb-6 block group">
-        <div class="absolute left-2.5 top-2 w-3 h-3 rounded-full bg-white dark:bg-gray-800 border-2 border-hyouka-mist group-hover:border-hyouka-sakura transition-colors"></div>
-        <div class="hyouka-card p-4 group-hover:translate-x-1 transition-transform">
-          <div class="flex items-start justify-between gap-4">
-            <div>
-              <h3 class="font-medium text-hyouka-ink dark:text-gray-100 group-hover:text-hyouka-sakura transition-colors mb-1">
-                Hello World — 古典部始動
-              </h3>
-              <p class="text-xs text-hyouka-mist dark:text-gray-500">日常 · 第一篇文章</p>
-            </div>
-            <span class="text-xs text-hyouka-mist dark:text-gray-600 shrink-0">06-28</span>
+          <div class="mt-4 space-y-4">
+            {yearPosts.map((post) => (
+              <a href={`/blog/${post.slug}`} class="relative pl-0 mb-6 block group">
+                <div class="hyouka-card p-4 group-hover:translate-x-1 transition-transform">
+                  <div class="flex items-start justify-between gap-4">
+                    <div>
+                      <h3 class="font-medium text-hyouka-ink dark:text-gray-100 group-hover:text-hyouka-sakura transition-colors mb-1">
+                        {post.title}
+                      </h3>
+                      <p class="text-xs text-hyouka-mist dark:text-gray-500">{post.tags.join(' · ')}</p>
+                    </div>
+                    <span class="text-xs text-hyouka-mist dark:text-gray-600 shrink-0">{post.date.slice(5)}</span>
+                  </div>
+                </div>
+              </a>
+            ))}
           </div>
         </div>
-      </a>
+      ))}
     </div>
   </div>
 </Layout>

@@ -1,5 +1,8 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { getSortedPosts } from '../data/posts';
+
+const latestPosts = getSortedPosts().slice(0, 3);
 ---
 
 <Layout title="首页" description="Iscream 的个人博客" showSakura={true}>
@@ -52,15 +55,17 @@ import Layout from '../layouts/Layout.astro';
           最新文章
         </h2>
         <div class="space-y-3">
-          <a href="/blog/hello-world" class="block hyouka-card p-4 hover:translate-x-1 transition-transform">
-            <div class="flex items-start justify-between gap-4">
-              <div>
-                <h3 class="font-medium text-hyouka-ink dark:text-gray-100 mb-1">Hello World</h3>
-                <p class="text-xs text-hyouka-mist dark:text-gray-500">2026-06-28</p>
+          {latestPosts.map((post) => (
+            <a href={`/blog/${post.slug}`} class="block hyouka-card p-4 hover:translate-x-1 transition-transform">
+              <div class="flex items-start justify-between gap-4">
+                <div>
+                  <h3 class="font-medium text-hyouka-ink dark:text-gray-100 mb-1">{post.title}</h3>
+                  <p class="text-xs text-hyouka-mist dark:text-gray-500">{post.date}</p>
+                </div>
+                <span class="hyouka-tag shrink-0">{post.tags[0]}</span>
               </div>
-              <span class="hyouka-tag shrink-0">日常</span>
-            </div>
-          </a>
+            </a>
+          ))}
         </div>
       </div>
     </div>
