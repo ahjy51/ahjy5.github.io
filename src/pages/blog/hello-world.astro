@@ -1,0 +1,72 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const title = "Hello World — 古典部始動";
+const description = "これは、古典部のブログです。日々の気づきや学びを綴っていきます。";
+const date = "2026-06-28";
+const tags = ["日常","第一篇文章"];
+---
+
+<Layout title={`${title} — Iscream`} description={description}>
+  <article class="max-w-3xl mx-auto px-4 pt-24 pb-16">
+    <a href="/blog" class="inline-flex items-center gap-1 text-sm text-hyouka-gold dark:text-amber-400 
+                          hover:text-hyouka-sakura dark:hover:text-pink-300 transition-colors mb-6">
+      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+      </svg>
+      返回文章列表
+    </a>
+
+    <header class="mb-8">
+      <div class="flex items-center gap-2 mb-3 flex-wrap">
+        {tags.map(tag => <span class="hyouka-tag">{tag}</span>)}
+      </div>
+      <h1 class="hyouka-heading text-2xl md:text-3xl mb-4">
+        {title}
+      </h1>
+      <div class="flex items-center gap-3 text-sm text-hyouka-mist dark:text-gray-500">
+        <time datetime={date}>{date}</time>
+        <span>·</span>
+        <span>Iscream</span>
+      </div>
+    </header>
+
+    <div class="hyouka-card p-6 md:p-8">
+      <div class="prose">
+        <p>
+                  本次，古典部博客正式上线了。
+                </p>
+        
+                <p>
+                  往后我会在这里记录日常感悟、学习心得以及各类技术笔记。
+                </p>
+        
+                <h2>关于本博客</h2>
+        
+                <p>
+                  本站采用 <strong>Astro</strong> + <strong>TailwindCSS</strong>  搭建
+                  托管于 GitHub Pages。
+                </p>
+        
+                <p>
+                  整体主题设计取材于《冰菓》，是一款富有温情的和风风格页面。设计灵感取自京都动画柔和的配色，以及古典部沉静淡雅的氛围。
+                </p>
+        
+                <h2>后续更新内容</h2>
+        
+                <ul>
+                  <li>计算机骚操作技巧</li>
+                  <li>AI学习笔记</li>
+                  <li>动漫、读书观后感</li>
+                  <li>生活日常随笔</li>
+                </ul>
+        
+               
+                <blockquote>
+                  「僕には、やらなくてもいいことなら、やらない。やらなければいけないことなら、手短に。」
+        		——节能主义🫡
+                </blockquote>
+      </div>
+    </div>
+  </article>
+</Layout>

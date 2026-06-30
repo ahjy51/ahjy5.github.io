@@ -1,12 +1,13 @@
 import { createServer } from 'node:http';
 import { existsSync } from 'node:fs';
-import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, rename, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const rootDir = process.cwd();
 const blogDir = path.join(rootDir, 'src/pages/blog');
 const postsPath = path.join(rootDir, 'src/data/posts.ts');
+const dynamicPostPath = path.join(blogDir, '[...slug].astro');
 const port = Number(process.env.BLOG_ADMIN_PORT || 4322);
 
 const textTypes = {
@@ -156,6 +157,34 @@ async function readManagedPost(slug) {
   };
 }
 
+async function readDynamicPost(slug) {
+  const posts = await readPosts();
+  const meta = posts.find((post) => post.slug === slug);
+  const source = await readFile(dynamicPostPath, 'utf8');
+
+  return {
+    title: meta?.title || '',
+    description: meta?.description || '',
+    date: meta?.date || '',
+    tags: meta?.tags || [],
+    content: extractContent(source),
+  };
+}
+
+async function removeDynamicSlug(slug) {
+  if (!existsSync(dynamicPostPath)) return;
+
+  const source = await readFile(dynamicPostPath, 'utf8');
+  const nextSource = source.replace(
+    new RegExp(`\\n\\s*\\{\\s*params:\\s*\\{\\s*slug:\\s*['"]${slug}['"]\\s*\\}\\s*\\},?`, 'g'),
+    '',
+  );
+
+  if (nextSource !== source) {
+    await writeFile(dynamicPostPath, nextSource, 'utf8');
+  }
+}
+
 function renderPost({ title, description, date, tags, content }) {
   return `---
 import Layout from '../../layouts/Layout.astro';
@@ -206,21 +235,28 @@ async function listPosts(res) {
     posts: posts.map((post) => ({
       ...post,
       managed: isManagedPost(post.slug),
+      editable: true,
     })),
   });
 }
 
 async function getPost(res, searchParams) {
   const slug = sanitizeSlug(searchParams.get('slug'));
-  if (!slug || !isManagedPost(slug)) {
-    sendJson(res, 404, { error: '这篇文章不是由本地工具管理的独立页面，暂不能直接编辑。' });
+  if (!slug) {
+    sendJson(res, 404, { error: '文章不存在。' });
     return;
   }
 
   const posts = await readPosts();
   const meta = posts.find((post) => post.slug === slug);
-  const post = await readManagedPost(slug);
-  sendJson(res, 200, { post: { ...meta, ...post, slug, managed: true } });
+  if (!meta) {
+    sendJson(res, 404, { error: '文章不存在。' });
+    return;
+  }
+
+  const managed = isManagedPost(slug);
+  const post = managed ? await readManagedPost(slug) : await readDynamicPost(slug);
+  sendJson(res, 200, { post: { ...meta, ...post, slug, managed } });
 }
 
 async function savePost(res, body) {
@@ -265,12 +301,37 @@ async function savePost(res, body) {
   }
 
   await writeFile(postFile(slug), renderPost({ title, description, date, tags, content }), 'utf8');
+  await removeDynamicSlug(oldSlug || slug);
 
   const nextPosts = posts.filter((post) => post.slug !== oldSlug && post.slug !== slug);
   nextPosts.push({ slug, title, description, date, tags });
   await writePosts(nextPosts);
 
   sendJson(res, 200, { ok: true, slug });
+}
+
+async function deletePost(res, body) {
+  const slug = sanitizeSlug(body.slug);
+  if (!slug) {
+    sendJson(res, 400, { error: '缺少要删除的文章 slug。' });
+    return;
+  }
+
+  const posts = await readPosts();
+  const nextPosts = posts.filter((post) => post.slug !== slug);
+  if (nextPosts.length === posts.length) {
+    sendJson(res, 404, { error: '文章不存在。' });
+    return;
+  }
+
+  if (isManagedPost(slug)) {
+    await unlink(postFile(slug));
+  }
+
+  await removeDynamicSlug(slug);
+  await writePosts(nextPosts);
+
+  sendJson(res, 200, { ok: true });
 }
 
 const appHtml = `<!doctype html>
@@ -340,21 +401,42 @@ const appHtml = `<!doctype html>
         border: 1px solid var(--line);
         background: #fff;
         border-radius: 8px;
-        padding: 12px;
+        padding: 11px 12px;
         color: var(--text);
         cursor: pointer;
+        display: grid;
+        gap: 5px;
+        min-height: 64px;
+        align-content: center;
       }
       .post-item.active { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(212, 122, 163, .14); }
-      .post-item[disabled] { cursor: not-allowed; opacity: .68; }
-      .post-title { display: block; font-weight: 700; margin-bottom: 4px; }
+      .post-title {
+        display: block;
+        font-weight: 700;
+        line-height: 1.35;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .post-meta {
+        color: var(--muted);
+        display: block;
+        font-size: 12px;
+        font-weight: 650;
+        line-height: 1.35;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
       .badge {
         display: inline-flex;
+        width: max-content;
         border-radius: 999px;
         padding: 2px 8px;
         border: 1px solid rgba(212, 122, 163, .3);
         color: var(--accent-strong);
         font-size: 12px;
-        margin-top: 8px;
+        line-height: 1.3;
       }
       button {
         border: 1px solid var(--line);
@@ -368,6 +450,8 @@ const appHtml = `<!doctype html>
       }
       button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
       button.primary:hover { background: var(--accent-strong); }
+      button.danger { color: #b42318; border-color: #e7b8b1; background: #fff7f5; }
+      button.danger:hover { background: #ffe7e2; }
       button.icon { width: 38px; padding: 0; }
       button:disabled { opacity: .5; cursor: not-allowed; }
       form {
@@ -432,7 +516,7 @@ const appHtml = `<!doctype html>
     <div class="app">
       <aside>
         <h1>Blog Admin</h1>
-        <p class="muted">管理 Astro 博客文章。独立文章可编辑，旧的动态示例文章会显示为只读。</p>
+        <p class="muted">管理 Astro 博客文章。旧动态文章也可编辑，保存时会迁移为独立文章。</p>
         <button id="newPost" class="primary" style="width:100%; margin-top:14px;">新建文章</button>
         <div id="postList" class="post-list"></div>
       </aside>
@@ -444,6 +528,7 @@ const appHtml = `<!doctype html>
           </div>
           <div class="actions">
             <span id="status" class="status"></span>
+            <button id="deletePost" class="danger" disabled>删除</button>
             <button id="savePost" class="primary">保存</button>
           </div>
         </div>
@@ -495,6 +580,7 @@ const appHtml = `<!doctype html>
       const editor = document.querySelector('#editor');
       const source = document.querySelector('#source');
       const statusEl = document.querySelector('#status');
+      const deleteButton = document.querySelector('#deletePost');
       const fields = {
         slug: document.querySelector('#slug'),
         date: document.querySelector('#date'),
@@ -530,16 +616,17 @@ const appHtml = `<!doctype html>
         editor.innerHTML = post?.content || '<p>开始写作……</p>';
         source.value = editor.innerHTML;
         document.querySelector('#formTitle').textContent = post ? '编辑文章' : '新建文章';
+        deleteButton.disabled = !post?.slug;
         setStatus('');
         renderList();
       }
 
       function renderList() {
         postList.innerHTML = posts.map((post) => \`
-          <button class="post-item \${post.slug === oldSlug ? 'active' : ''}" data-slug="\${post.slug}" \${post.managed ? '' : 'disabled'}>
+          <button class="post-item \${post.slug === oldSlug ? 'active' : ''}" data-slug="\${post.slug}">
             <span class="post-title">\${post.title}</span>
-            <span class="muted">\${post.date} · /\${post.slug}</span>
-            \${post.managed ? '' : '<span class="badge">旧动态文章，只读</span>'}
+            <span class="post-meta">\${post.date} · /\${post.slug}</span>
+            \${post.managed ? '' : '<span class="badge">旧文章，保存后迁移</span>'}
           </button>
         \`).join('');
       }
@@ -573,7 +660,7 @@ const appHtml = `<!doctype html>
 
       postList.addEventListener('click', (event) => {
         const item = event.target.closest('.post-item');
-        if (!item || item.disabled) return;
+        if (!item) return;
         loadPost(item.dataset.slug);
       });
 
@@ -634,6 +721,30 @@ const appHtml = `<!doctype html>
         setStatus('已保存');
       });
 
+      deleteButton.addEventListener('click', async () => {
+        if (!oldSlug) return;
+        const post = posts.find((item) => item.slug === oldSlug);
+        const name = post?.title || oldSlug;
+        const confirmed = confirm('确定删除文章「' + name + '」吗？\\n\\n这会移除文章文件和列表记录。');
+        if (!confirmed) return;
+
+        setStatus('删除中...');
+        const response = await fetch('/api/post', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ slug: oldSlug }),
+        });
+        const data = await response.json();
+        if (!response.ok) {
+          setStatus(data.error || '删除失败', true);
+          return;
+        }
+
+        await loadPosts();
+        setForm();
+        setStatus('已删除');
+      });
+
       loadPosts().then(() => setForm());
     </script>
   </body>
@@ -660,6 +771,11 @@ const server = createServer(async (req, res) => {
 
     if (req.method === 'POST' && url.pathname === '/api/post') {
       await savePost(res, await readJson(req));
+      return;
+    }
+
+    if (req.method === 'DELETE' && url.pathname === '/api/post') {
+      await deletePost(res, await readJson(req));
       return;
     }
 
