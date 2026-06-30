@@ -1,13 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 
-export async function getStaticPaths() {
-  return [
-    { params: { slug: 'new-post-guide' } },
-  ];
-}
-
-const { slug } = Astro.params;
 const title = '新建文章并推送指南';
 const description = '从创建文章到推送到 GitHub Pages 的完整操作流程';
 const date = '2026-06-28';
@@ -47,22 +40,16 @@ const tags = ['指南', '博客'];
 
         <p>最简单的方式是复制现有的文章模板：</p>
 
-        <pre><code>cp src/pages/blog/post-title.astro src/pages/blog/my-new-post.astro</code></pre>
+        <pre><code>cp src/pages/blog/_post-title.astro src/pages/blog/my-new-post.astro</code></pre>
 
         <p>然后打开新文件，修改顶部的元信息：</p>
 
-        <pre><code>export async function getStaticPaths() &#123;
-  return [
-    &#123; params: &#123; slug: 'my-new-post' &#125; &#125;,
-  ];
-&#125;
-
-const title = '我的新文章';           // ① 文章标题
+        <pre><code>const title = '我的新文章';           // ① 文章标题
 const description = '文章摘要……';     // ② 文章摘要
 const date = '2026-06-28';           // ③ 发布日期
 const tags = ['技术', '前端'];        // ④ 文章标签</code></pre>
 
-        <p><code>slug</code> 决定了文章的访问路径：<code>/blog/my-new-post</code>。建议用英文短横线连接。</p>
+        <p>文件名决定了文章的访问路径：<code>src/pages/blog/my-new-post.astro</code> 会生成 <code>/blog/my-new-post</code>。建议用英文短横线连接。</p>
 
         <h2>二、写正文</h2>
 
