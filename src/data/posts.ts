@@ -9,6 +9,14 @@ export interface Post {
 
 export const posts: Post[] = [
   {
+    slug: "test",
+    title: "test",
+    description: "test",
+    date: "2026-07-01",
+    tags: [],
+    hidden: false,
+  },
+  {
     slug: "newtest",
     title: "测试",
     description: "测试",

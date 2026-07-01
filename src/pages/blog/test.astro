@@ -1,0 +1,40 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const title = "test";
+const description = "test";
+const date = "2026-07-01";
+const tags = [];
+---
+
+<Layout title={`${title} — Iscream`} description={description}>
+  <article class="max-w-3xl mx-auto px-4 pt-24 pb-16">
+    <a href="/blog" class="inline-flex items-center gap-1 text-sm text-hyouka-gold dark:text-amber-400 
+                          hover:text-hyouka-sakura dark:hover:text-pink-300 transition-colors mb-6">
+      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+      </svg>
+      返回文章列表
+    </a>
+
+    <header class="mb-8">
+      <div class="flex items-center gap-2 mb-3 flex-wrap">
+        {tags.map(tag => <span class="hyouka-tag">{tag}</span>)}
+      </div>
+      <h1 class="hyouka-heading text-2xl md:text-3xl mb-4">
+        {title}
+      </h1>
+      <div class="flex items-center gap-3 text-sm text-hyouka-mist dark:text-gray-500">
+        <time datetime={date}>{date}</time>
+        <span>·</span>
+        <span>Iscream</span>
+      </div>
+    </header>
+
+    <div class="hyouka-card p-6 md:p-8">
+      <div class="prose">
+        <p>开始写作……hggtrtyy</p>
+      </div>
+    </div>
+  </article>
+</Layout>
