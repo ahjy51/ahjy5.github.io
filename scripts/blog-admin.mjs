@@ -1,4 +1,5 @@
 import { createServer } from 'node:http';
+import { execFile } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { mkdir, readFile, rename, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -9,6 +10,7 @@ const blogDir = path.join(rootDir, 'src/pages/blog');
 const postsPath = path.join(rootDir, 'src/data/posts.ts');
 const dynamicPostPath = path.join(blogDir, '[...slug].astro');
 const port = Number(process.env.BLOG_ADMIN_PORT || 4322);
+const publishPaths = ['src/data/posts.ts', 'src/pages/blog'];
 
 const textTypes = {
   '.css': 'text/css; charset=utf-8',
@@ -36,6 +38,66 @@ async function readJson(req) {
   let raw = '';
   for await (const chunk of req) raw += chunk;
   return raw ? JSON.parse(raw) : {};
+}
+
+function runGit(args, options = {}) {
+  return new Promise((resolve, reject) => {
+    execFile('git', args, {
+      cwd: rootDir,
+      timeout: options.timeout || 120_000,
+      maxBuffer: 1024 * 1024,
+    }, (error, stdout, stderr) => {
+      const output = [stdout, stderr].filter(Boolean).join('\n').trim();
+      if (error) {
+        error.output = output;
+        reject(error);
+        return;
+      }
+      resolve(output);
+    });
+  });
+}
+
+async function hasStagedChanges(paths = []) {
+  try {
+    await runGit(['diff', '--cached', '--quiet', '--', ...paths]);
+    return false;
+  } catch (error) {
+    if (error?.code === 1) return true;
+    throw error;
+  }
+}
+
+async function publishPosts(res) {
+  const branch = (await runGit(['branch', '--show-current'])).trim();
+  if (branch !== 'master') {
+    sendJson(res, 409, { error: `当前分支是 ${branch || '未知'}，请切换到 master 后再推送。` });
+    return;
+  }
+
+  const beforeStatus = await runGit(['status', '--short', '--', ...publishPaths]);
+  const log = [];
+  let committed = false;
+
+  if (beforeStatus) {
+    await runGit(['add', '--', ...publishPaths]);
+    if (await hasStagedChanges(publishPaths)) {
+      const stamp = new Date().toISOString().slice(0, 16).replace('T', ' ');
+      const commitOutput = await runGit(['commit', '-m', `Update blog posts ${stamp}`, '--', ...publishPaths]);
+      committed = true;
+      log.push(commitOutput);
+    }
+  }
+
+  const pushOutput = await runGit(['push', 'origin', 'master'], { timeout: 180_000 });
+  if (pushOutput) log.push(pushOutput);
+
+  sendJson(res, 200, {
+    ok: true,
+    committed,
+    message: committed ? '已提交并推送到 GitHub。' : '没有新的文章改动，已同步远端状态。',
+    output: log.filter(Boolean).join('\n\n'),
+  });
 }
 
 function getString(source, key) {
@@ -545,6 +607,19 @@ const appHtml = `<!doctype html>
       .status { min-height: 20px; font-size: 13px; color: var(--green); }
       .error { color: #b42318; }
       .actions { display: flex; align-items: center; gap: 10px; justify-content: flex-end; }
+      .publish-log {
+        background: #2c1810;
+        border-radius: 8px;
+        color: #fffaf5;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 12px;
+        line-height: 1.55;
+        margin: -8px 0 18px;
+        max-height: 180px;
+        overflow: auto;
+        padding: 12px;
+        white-space: pre-wrap;
+      }
       @media (max-width: 860px) {
         .app { grid-template-columns: 1fr; }
         aside { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--line); }
@@ -569,11 +644,13 @@ const appHtml = `<!doctype html>
           </div>
           <div class="actions">
             <span id="status" class="status"></span>
+            <button id="publishPosts" type="button">推送到 GitHub</button>
             <button id="toggleVisibility" class="warning" disabled>隐藏文章</button>
             <button id="deletePost" class="danger" disabled>删除文章</button>
             <button id="savePost" class="primary">保存</button>
           </div>
         </div>
+        <pre id="publishLog" class="publish-log hidden"></pre>
         <div class="card">
           <form id="postForm">
             <label>
@@ -625,6 +702,8 @@ const appHtml = `<!doctype html>
       const statusEl = document.querySelector('#status');
       const deleteButton = document.querySelector('#deletePost');
       const visibilityButton = document.querySelector('#toggleVisibility');
+      const publishButton = document.querySelector('#publishPosts');
+      const publishLog = document.querySelector('#publishLog');
       const fields = {
         slug: document.querySelector('#slug'),
         date: document.querySelector('#date'),
@@ -645,6 +724,11 @@ const appHtml = `<!doctype html>
       function setStatus(message, isError = false) {
         statusEl.textContent = message;
         statusEl.classList.toggle('error', isError);
+      }
+
+      function setPublishLog(message = '') {
+        publishLog.textContent = message;
+        publishLog.classList.toggle('hidden', !message);
       }
 
       function splitTags(value) {
@@ -776,6 +860,32 @@ const appHtml = `<!doctype html>
         setStatus('已保存');
       });
 
+      publishButton.addEventListener('click', async () => {
+        const confirmed = confirm('确定提交已保存的文章改动并推送到 GitHub 吗？\\n\\n推送后会触发 GitHub Pages 部署。');
+        if (!confirmed) return;
+
+        publishButton.disabled = true;
+        setStatus('推送中...');
+        setPublishLog('');
+
+        const response = await fetch('/api/publish', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: '{}',
+        });
+        const data = await response.json();
+
+        publishButton.disabled = false;
+        if (!response.ok) {
+          setStatus(data.error || '推送失败', true);
+          setPublishLog(data.output || '');
+          return;
+        }
+
+        setStatus(data.message || '已推送');
+        setPublishLog(data.output || data.message || '');
+      });
+
       visibilityButton.addEventListener('click', async () => {
         if (!oldSlug) return;
         const nextHidden = !currentHidden;
@@ -858,6 +968,11 @@ const server = createServer(async (req, res) => {
       return;
     }
 
+    if (req.method === 'POST' && url.pathname === '/api/publish') {
+      await publishPosts(res);
+      return;
+    }
+
     if (req.method === 'DELETE' && url.pathname === '/api/post') {
       await deletePost(res, await readJson(req));
       return;
@@ -865,7 +980,10 @@ const server = createServer(async (req, res) => {
 
     notFound(res);
   } catch (error) {
-    sendJson(res, 500, { error: error instanceof Error ? error.message : String(error) });
+    sendJson(res, 500, {
+      error: error instanceof Error ? error.message : String(error),
+      output: error?.output || '',
+    });
   }
 });
 

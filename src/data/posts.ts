@@ -14,7 +14,7 @@ export const posts: Post[] = [
     description: "测试",
     date: "2026-06-30",
     tags: ["技术"],
-    hidden: true,
+    hidden: false,
   },
   {
     slug: "hello-world",
