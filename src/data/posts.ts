@@ -4,6 +4,7 @@ export interface Post {
   description: string;
   date: string;
   tags: string[];
+  hidden: boolean;
 }
 
 export const posts: Post[] = [
@@ -13,6 +14,7 @@ export const posts: Post[] = [
     description: "测试",
     date: "2026-06-30",
     tags: ["技术"],
+    hidden: true,
   },
   {
     slug: "hello-world",
@@ -20,6 +22,7 @@ export const posts: Post[] = [
     description: "これは、古典部のブログです。日々の気づきや学びを綴っていきます。",
     date: "2026-06-28",
     tags: ["日常","第一篇文章"],
+    hidden: false,
   },
   {
     slug: "new-post-guide",
@@ -27,9 +30,10 @@ export const posts: Post[] = [
     description: "从创建文章到推送到 GitHub Pages 的完整操作流程",
     date: "2026-06-28",
     tags: ["指南","博客"],
+    hidden: false,
   },
 ];
 
 export function getSortedPosts(): Post[] {
-  return [...posts].sort((a, b) => b.date.localeCompare(a.date));
+  return posts.filter((post) => !post.hidden).sort((a, b) => b.date.localeCompare(a.date));
 }

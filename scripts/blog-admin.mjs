@@ -54,6 +54,11 @@ function getTags(source) {
   return [...match[1].matchAll(/['"]([^'"]+)['"]/g)].map((tag) => tag[1].trim()).filter(Boolean);
 }
 
+function getBoolean(source, key) {
+  const match = new RegExp(`${key}:\\s*(true|false)`).exec(source);
+  return match ? match[1] === 'true' : false;
+}
+
 async function readPosts() {
   const source = await readFile(postsPath, 'utf8');
   const postsBlock = /export const posts: Post\[] = \[([\s\S]*?)\];/.exec(source);
@@ -67,6 +72,7 @@ async function readPosts() {
       description: getString(entry, 'description'),
       date: getString(entry, 'date'),
       tags: getTags(entry),
+      hidden: getBoolean(entry, 'hidden'),
     };
   }).filter((post) => post.slug);
 }
@@ -79,6 +85,7 @@ async function writePosts(posts) {
     description: ${JSON.stringify(post.description)},
     date: ${JSON.stringify(post.date)},
     tags: ${JSON.stringify(post.tags)},
+    hidden: ${Boolean(post.hidden)},
   },`).join('\n');
 
   const source = `export interface Post {
@@ -87,6 +94,7 @@ async function writePosts(posts) {
   description: string;
   date: string;
   tags: string[];
+  hidden: boolean;
 }
 
 export const posts: Post[] = [
@@ -94,7 +102,7 @@ ${entries}
 ];
 
 export function getSortedPosts(): Post[] {
-  return [...posts].sort((a, b) => b.date.localeCompare(a.date));
+  return posts.filter((post) => !post.hidden).sort((a, b) => b.date.localeCompare(a.date));
 }
 `;
 
@@ -283,6 +291,8 @@ async function savePost(res, body) {
   const posts = await readPosts();
   const existing = posts.find((post) => post.slug === slug);
   const isRename = oldSlug && oldSlug !== slug;
+  const previousPost = posts.find((post) => post.slug === (oldSlug || slug));
+  const hidden = typeof body.hidden === 'boolean' ? body.hidden : previousPost?.hidden || existing?.hidden || false;
 
   if (!oldSlug && existing && !isManagedPost(slug)) {
     sendJson(res, 409, { error: '这个 slug 已存在，但不是独立文章文件，不能覆盖。' });
@@ -304,10 +314,34 @@ async function savePost(res, body) {
   await removeDynamicSlug(oldSlug || slug);
 
   const nextPosts = posts.filter((post) => post.slug !== oldSlug && post.slug !== slug);
-  nextPosts.push({ slug, title, description, date, tags });
+  nextPosts.push({ slug, title, description, date, tags, hidden });
   await writePosts(nextPosts);
 
-  sendJson(res, 200, { ok: true, slug });
+  sendJson(res, 200, { ok: true, slug, hidden });
+}
+
+async function setPostVisibility(res, body) {
+  const slug = sanitizeSlug(body.slug);
+  if (!slug) {
+    sendJson(res, 400, { error: '缺少要显示或隐藏的文章 slug。' });
+    return;
+  }
+
+  if (typeof body.hidden !== 'boolean') {
+    sendJson(res, 400, { error: '缺少显示/隐藏状态。' });
+    return;
+  }
+
+  const posts = await readPosts();
+  const post = posts.find((item) => item.slug === slug);
+  if (!post) {
+    sendJson(res, 404, { error: '文章不存在。' });
+    return;
+  }
+
+  post.hidden = body.hidden;
+  await writePosts(posts);
+  sendJson(res, 200, { ok: true, slug, hidden: post.hidden });
 }
 
 async function deletePost(res, body) {
@@ -410,6 +444,7 @@ const appHtml = `<!doctype html>
         align-content: center;
       }
       .post-item.active { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(212, 122, 163, .14); }
+      .post-item-hidden { opacity: .72; }
       .post-title {
         display: block;
         font-weight: 700;
@@ -438,6 +473,10 @@ const appHtml = `<!doctype html>
         font-size: 12px;
         line-height: 1.3;
       }
+      .badge-muted {
+        border-color: rgba(124, 107, 95, .32);
+        color: var(--muted);
+      }
       button {
         border: 1px solid var(--line);
         background: #fff;
@@ -450,6 +489,8 @@ const appHtml = `<!doctype html>
       }
       button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
       button.primary:hover { background: var(--accent-strong); }
+      button.warning { color: #8a4b00; border-color: #e6c48d; background: #fff8e8; }
+      button.warning:hover { background: #fff0cf; }
       button.danger { color: #b42318; border-color: #e7b8b1; background: #fff7f5; }
       button.danger:hover { background: #ffe7e2; }
       button.icon { width: 38px; padding: 0; }
@@ -528,15 +569,17 @@ const appHtml = `<!doctype html>
           </div>
           <div class="actions">
             <span id="status" class="status"></span>
-            <button id="deletePost" class="danger" disabled>删除</button>
+            <button id="toggleVisibility" class="warning" disabled>隐藏文章</button>
+            <button id="deletePost" class="danger" disabled>删除文章</button>
             <button id="savePost" class="primary">保存</button>
           </div>
         </div>
         <div class="card">
           <form id="postForm">
             <label>
-              Slug
+              Slug（URL 路径）
               <input id="slug" required placeholder="my-new-post" />
+              <span class="muted">例：my-new-post 会生成 /blog/my-new-post/</span>
             </label>
             <label>
               日期
@@ -581,6 +624,7 @@ const appHtml = `<!doctype html>
       const source = document.querySelector('#source');
       const statusEl = document.querySelector('#status');
       const deleteButton = document.querySelector('#deletePost');
+      const visibilityButton = document.querySelector('#toggleVisibility');
       const fields = {
         slug: document.querySelector('#slug'),
         date: document.querySelector('#date'),
@@ -592,6 +636,7 @@ const appHtml = `<!doctype html>
       let posts = [];
       let oldSlug = '';
       let sourceMode = false;
+      let currentHidden = false;
 
       function today() {
         return new Date().toISOString().slice(0, 10);
@@ -606,8 +651,14 @@ const appHtml = `<!doctype html>
         return value.split(',').map((tag) => tag.trim()).filter(Boolean);
       }
 
+      function updateVisibilityButton() {
+        visibilityButton.disabled = !oldSlug;
+        visibilityButton.textContent = currentHidden ? '显示文章' : '隐藏文章';
+      }
+
       function setForm(post = null) {
         oldSlug = post?.slug || '';
+        currentHidden = Boolean(post?.hidden);
         fields.slug.value = post?.slug || '';
         fields.date.value = post?.date || today();
         fields.title.value = post?.title || '';
@@ -617,15 +668,17 @@ const appHtml = `<!doctype html>
         source.value = editor.innerHTML;
         document.querySelector('#formTitle').textContent = post ? '编辑文章' : '新建文章';
         deleteButton.disabled = !post?.slug;
+        updateVisibilityButton();
         setStatus('');
         renderList();
       }
 
       function renderList() {
         postList.innerHTML = posts.map((post) => \`
-          <button class="post-item \${post.slug === oldSlug ? 'active' : ''}" data-slug="\${post.slug}">
+          <button class="post-item \${post.slug === oldSlug ? 'active' : ''} \${post.hidden ? 'post-item-hidden' : ''}" data-slug="\${post.slug}">
             <span class="post-title">\${post.title}</span>
             <span class="post-meta">\${post.date} · /\${post.slug}</span>
+            \${post.hidden ? '<span class="badge badge-muted">已隐藏</span>' : ''}
             \${post.managed ? '' : '<span class="badge">旧文章，保存后迁移</span>'}
           </button>
         \`).join('');
@@ -703,6 +756,7 @@ const appHtml = `<!doctype html>
           description: fields.description.value,
           date: fields.date.value,
           tags: splitTags(fields.tags.value),
+          hidden: currentHidden,
           content: source.value,
         };
         const response = await fetch('/api/post', {
@@ -716,9 +770,34 @@ const appHtml = `<!doctype html>
           return;
         }
         oldSlug = data.slug;
+        currentHidden = Boolean(data.hidden);
         await loadPosts();
         await loadPost(data.slug);
         setStatus('已保存');
+      });
+
+      visibilityButton.addEventListener('click', async () => {
+        if (!oldSlug) return;
+        const nextHidden = !currentHidden;
+        setStatus(nextHidden ? '隐藏中...' : '显示中...');
+
+        const response = await fetch('/api/post/visibility', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ slug: oldSlug, hidden: nextHidden }),
+        });
+        const data = await response.json();
+        if (!response.ok) {
+          setStatus(data.error || '操作失败', true);
+          return;
+        }
+
+        currentHidden = Boolean(data.hidden);
+        const post = posts.find((item) => item.slug === oldSlug);
+        if (post) post.hidden = currentHidden;
+        updateVisibilityButton();
+        await loadPosts();
+        setStatus(currentHidden ? '已隐藏' : '已显示');
       });
 
       deleteButton.addEventListener('click', async () => {
@@ -771,6 +850,11 @@ const server = createServer(async (req, res) => {
 
     if (req.method === 'POST' && url.pathname === '/api/post') {
       await savePost(res, await readJson(req));
+      return;
+    }
+
+    if (req.method === 'PATCH' && url.pathname === '/api/post/visibility') {
+      await setPostVisibility(res, await readJson(req));
       return;
     }
 
