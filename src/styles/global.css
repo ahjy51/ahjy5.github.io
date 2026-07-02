@@ -41,6 +41,75 @@
   .hyouka-heading {
     @apply font-serif font-bold text-hyouka-ink dark:text-gray-100;
   }
+
+  .hyouka-avatar-frame {
+    position: relative;
+    isolation: isolate;
+    width: 8.75rem;
+    height: 8.75rem;
+    margin: 0 auto 1.75rem;
+    padding: 0.62rem;
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow:
+      0 22px 48px rgba(44, 24, 16, 0.16),
+      0 0 0 1px rgba(255, 255, 255, 0.86);
+  }
+
+  .hyouka-avatar-frame::before {
+    content: '';
+    position: absolute;
+    inset: -0.7rem;
+    z-index: -1;
+    border: 0.22rem dashed rgba(244, 186, 145, 0.88);
+    border-radius: inherit;
+    filter: drop-shadow(0 10px 22px rgba(212, 122, 163, 0.18));
+    transform: rotate(-8deg);
+  }
+
+  .hyouka-avatar-frame::after {
+    content: '';
+    position: absolute;
+    inset: 0.45rem;
+    z-index: 2;
+    border-radius: inherit;
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.9),
+      inset 0 -18px 28px rgba(44, 24, 16, 0.08);
+    pointer-events: none;
+  }
+
+  .hyouka-avatar-image {
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: inherit;
+    box-shadow: 0 0 0 1px rgba(244, 186, 145, 0.36);
+  }
+
+  .dark .hyouka-avatar-frame,
+  html.dark .hyouka-avatar-frame {
+    background: rgba(255, 255, 255, 0.94);
+    box-shadow:
+      0 24px 52px rgba(0, 0, 0, 0.42),
+      0 0 0 1px rgba(255, 255, 255, 0.72);
+  }
+
+  .dark .hyouka-avatar-frame::before,
+  html.dark .hyouka-avatar-frame::before {
+    border-color: rgba(232, 160, 191, 0.78);
+    filter: drop-shadow(0 10px 26px rgba(232, 160, 191, 0.2));
+  }
+
+  @media (min-width: 768px) {
+    .hyouka-avatar-frame {
+      width: 9.5rem;
+      height: 9.5rem;
+    }
+  }
 }
 
 /* Prose styles for blog content */
